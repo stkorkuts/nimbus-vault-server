@@ -1,0 +1,14 @@
+[package]
+name = "nimbus_vault_server_infrastructure"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nimbus_vault_server_domain = { path = "../domain" }
+nimbus_vault_server_application = { path = "../application" }
+
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio-native-tls", "macros", "chrono", "json"] }
+tokio = { version = "1.45.1", features = ["full"] }
+ulid = { version = "1.2.1", features = ["postgres"] }
+chrono = { version = "0.4.41" }
+dotenvy = { version = "0.15.7" }
