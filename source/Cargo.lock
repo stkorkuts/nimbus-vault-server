@@ -1039,6 +1039,7 @@ version = "0.1.0"
 dependencies = [
  "nimbus_vault_server_domain",
  "nimbus_vault_server_shared",
+ "ulid",
 ]
 
 [[package]]

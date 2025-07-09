@@ -1,3 +1,5 @@
+use crate::services::UserRepository;
+
 pub struct InfrastructureSettings {
     database_url: String,
 }
@@ -21,7 +23,7 @@ impl InfrastructureConfiguration {
         Self { settings }
     }
 
-    pub fn settings(&self) -> &InfrastructureSettings {
-        &self.settings
+    pub fn configure_user_repository(&self) -> UserRepository {
+        UserRepository {}
     }
 }

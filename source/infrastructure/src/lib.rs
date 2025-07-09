@@ -1,6 +1,7 @@
-pub mod configuration;
+mod configuration;
 mod database;
 mod proto;
-pub mod webapi;
+mod services;
+mod webapi;
 
 pub use configuration::*;

@@ -1,1 +1,1 @@
-pub mod db_entities;
+mod db_entities;

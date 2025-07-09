@@ -1,17 +1,40 @@
-mod traits;
-pub use traits::*;
+use std::error::Error;
 
-pub struct ApplicationServices<'a> {
-    pub user_service: Option<Box<dyn UserService + 'a>>,
+mod repositories;
+
+pub use repositories::UserRepository;
+
+pub struct ApplicationServices {
+    user_repository: Box<dyn UserRepository>,
 }
 
-impl<'a> ApplicationServices<'a> {
+impl ApplicationServices {
+    pub fn user_repository(&self) -> &dyn UserRepository {
+        &*self.user_repository
+    }
+}
+
+pub struct ApplicationServicesBuilder {
+    user_repository: Option<Box<dyn UserRepository>>,
+}
+
+impl ApplicationServicesBuilder {
     pub fn init() -> Self {
-        Self { user_service: None }
+        ApplicationServicesBuilder {
+            user_repository: None,
+        }
     }
 
-    pub fn set_user_service(&mut self, service: impl UserService + 'a) -> &mut Self {
-        self.user_service = Some(Box::new(service));
+    pub fn with_user_repository(mut self, service: Box<dyn UserRepository>) -> Self {
+        self.user_repository = Some(service);
         self
+    }
+
+    pub fn build(self) -> Result<ApplicationServices, Box<dyn Error>> {
+        let user_repository = self
+            .user_repository
+            .ok_or("User repository is not set yet")?;
+
+        Ok(ApplicationServices { user_repository })
     }
 }

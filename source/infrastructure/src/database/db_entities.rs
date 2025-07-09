@@ -1,2 +1,2 @@
-pub mod device;
-pub mod user;
+mod device;
+mod user;

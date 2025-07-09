@@ -1,3 +1,3 @@
-pub struct User {
-    
-}
+mod user;
+
+pub use user::User;
