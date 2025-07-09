@@ -7,3 +7,7 @@ edition = "2024"
 nimbus_vault_server_domain = { path = "../domain" }
 nimbus_vault_server_application = { path = "../application" }
 nimbus_vault_server_infrastructure = { path = "../infrastructure" }
+nimbus_vault_server_shared = { path = "../shared" }
+
+dotenvy = { version = "0.15.7" }
+tokio = { version = "1.45.1", features = ["full"] }

@@ -2,3 +2,6 @@
 name = "nimbus_vault_server_domain"
 version = "0.1.0"
 edition = "2024"
+
+[dependencies]
+nimbus_vault_server_shared = { path = "../shared" }
