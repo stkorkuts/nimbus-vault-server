@@ -8,14 +8,14 @@ pub struct ApplicationServices {
     user_repository: Box<dyn UserRepository>,
 }
 
+pub struct ApplicationServicesBuilder {
+    user_repository: Option<Box<dyn UserRepository>>,
+}
+
 impl ApplicationServices {
     pub fn user_repository(&self) -> &dyn UserRepository {
         &*self.user_repository
     }
-}
-
-pub struct ApplicationServicesBuilder {
-    user_repository: Option<Box<dyn UserRepository>>,
 }
 
 impl ApplicationServicesBuilder {

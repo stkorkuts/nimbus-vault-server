@@ -1,30 +1,7 @@
-ALTER TABLE FileVersionChunks DROP CONSTRAINT fk_fileversionchunks_chunk_id;
-ALTER TABLE FileVersionChunks DROP CONSTRAINT fk_fileversionchunks_version_id;
-ALTER TABLE FileVersions DROP CONSTRAINT fk_fileversions_sync_device_id;
-ALTER TABLE FileVersions DROP CONSTRAINT fk_fileversions_file_id;
-ALTER TABLE Files DROP CONSTRAINT fk_files_latest_version_id;
-ALTER TABLE Files DROP CONSTRAINT fk_files_parent_id;
-ALTER TABLE Files DROP CONSTRAINT fk_files_user_id;
-ALTER TABLE Folders DROP CONSTRAINT fk_folders_parent_id;
-ALTER TABLE Folders DROP CONSTRAINT fk_folders_user_id;
-ALTER TABLE FileOperations DROP CONSTRAINT fk_fileoperations_device_id;
-ALTER TABLE FileOperations DROP CONSTRAINT fk_fileoperations_user_id;
-ALTER TABLE FolderOperations DROP CONSTRAINT fk_folderoperations_device_id;
-ALTER TABLE FolderOperations DROP CONSTRAINT fk_folderoperations_user_id;
 ALTER TABLE Devices DROP CONSTRAINT fk_devices_user_id;
 
-DROP TABLE IF EXISTS FileChunks;
-DROP TABLE IF EXISTS FileVersionChunks;
-DROP TABLE IF EXISTS FileVersions;
-DROP TABLE IF EXISTS Files;
-DROP TABLE IF EXISTS Folders;
-DROP TABLE IF EXISTS FileOperations;
-DROP TABLE IF EXISTS FolderOperations;
 DROP TABLE IF EXISTS Devices;
+
 DROP TABLE IF EXISTS Users;
 
-DROP TYPE IF EXISTS StorageType;
-DROP TYPE IF EXISTS FileVersionSyncStatus;
-DROP TYPE IF EXISTS FileOperationType;
-DROP TYPE IF EXISTS FolderOperationType;
 DROP TYPE IF EXISTS DeviceType;

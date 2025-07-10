@@ -1,10 +1,9 @@
+mod user;
+
 use std::error::Error;
 
 use crate::services::ApplicationServices;
-
-mod user;
-
-pub use user::RegisterUserUseCase;
+use user::RegisterUserUseCase;
 
 pub struct ApplicationUseCases<'a> {
     register_user: RegisterUserUseCase<'a>,

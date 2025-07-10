@@ -1037,6 +1037,7 @@ dependencies = [
 name = "nimbus_vault_server_application"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "nimbus_vault_server_domain",
  "nimbus_vault_server_shared",
  "ulid",
@@ -1046,7 +1047,9 @@ dependencies = [
 name = "nimbus_vault_server_domain"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "nimbus_vault_server_shared",
+ "ulid",
 ]
 
 [[package]]

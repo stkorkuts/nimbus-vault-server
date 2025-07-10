@@ -9,3 +9,4 @@ nimbus_vault_server_shared = { path = "../shared" }
 
 # Common
 ulid = { version = "1.2.1" }
+chrono = { version = "0.4.41" }

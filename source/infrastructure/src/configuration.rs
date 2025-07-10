@@ -1,29 +1,21 @@
-use crate::services::UserRepository;
+use std::error::Error;
 
-pub struct InfrastructureSettings {
-    database_url: String,
+use crate::{
+    database::{Database, DatabaseSettings},
+    services::DefaultUserRepository,
+};
+
+pub struct InfrastructureConfigurator {
+    database: Database,
 }
 
-impl InfrastructureSettings {
-    pub fn new(database_url: String) -> Self {
-        Self { database_url }
+impl InfrastructureConfigurator {
+    pub async fn init(database_settings: DatabaseSettings) -> Result<Self, Box<dyn Error>> {
+        let database = Database::init(database_settings).await?;
+        Ok(Self { database })
     }
 
-    pub fn database_url(&self) -> &str {
-        &self.database_url
-    }
-}
-
-pub struct InfrastructureConfiguration {
-    settings: InfrastructureSettings,
-}
-
-impl InfrastructureConfiguration {
-    pub fn new(settings: InfrastructureSettings) -> Self {
-        Self { settings }
-    }
-
-    pub fn configure_user_repository(&self) -> UserRepository {
-        UserRepository {}
+    pub fn configure_user_repository(&self) -> DefaultUserRepository {
+        DefaultUserRepository::init(&self.database)
     }
 }

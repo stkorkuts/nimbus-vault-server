@@ -1,9 +1,15 @@
 use chrono::{DateTime, Utc};
-use sqlx::FromRow;
 use ulid::Ulid;
 
-#[derive(FromRow, Debug)]
-pub struct UserDb {
+pub struct NewUserSpecification {
+    pub username: String,
+    pub password_hash: String,
+    pub e2e_key_hash: String,
+    pub encrypted_master_key: String,
+    pub current_time: DateTime<Utc>,
+}
+
+pub struct RestoreUserSpecification {
     pub id: Ulid,
     pub username: String,
     pub password_hash: String,
