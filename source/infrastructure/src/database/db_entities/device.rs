@@ -1,6 +1,5 @@
-use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 use sqlx::prelude::FromRow;
-use ulid::Ulid;
 
 use crate::database::enums::DeviceTypeDb;
 

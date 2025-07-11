@@ -1,6 +1,5 @@
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 use sqlx::FromRow;
-use ulid::Ulid;
 
 #[derive(FromRow, Debug)]
 pub struct UserDb {
