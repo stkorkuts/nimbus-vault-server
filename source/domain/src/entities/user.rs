@@ -5,7 +5,7 @@ use std::error::Error;
 use chrono::{DateTime, Utc};
 use ulid::Ulid;
 
-use crate::entities::user::specifications::{NewUserSpecification, RestoreUserSpecification};
+pub use specifications::*;
 
 #[derive(Debug)]
 pub struct User {
@@ -19,6 +19,34 @@ pub struct User {
 }
 
 impl User {
+    pub fn id(&self) -> Ulid {
+        self.id
+    }
+
+    pub fn username(&self) -> &str {
+        &self.username
+    }
+
+    pub fn password_hash(&self) -> &str {
+        &self.password_hash
+    }
+
+    pub fn e2e_key_hash(&self) -> &str {
+        &self.e2e_key_hash
+    }
+
+    pub fn encrypted_master_key(&self) -> &str {
+        &self.encrypted_master_key
+    }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
+
     pub fn new(specs: NewUserSpecification) -> Result<Self, Box<dyn Error>> {
         Self::validate(
             specs.username.as_str(),

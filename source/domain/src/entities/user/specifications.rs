@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use ulid::Ulid;
 
+#[derive(Debug)]
 pub struct NewUserSpecification {
     pub username: String,
     pub password_hash: String,
@@ -9,6 +10,7 @@ pub struct NewUserSpecification {
     pub current_time: DateTime<Utc>,
 }
 
+#[derive(Debug)]
 pub struct RestoreUserSpecification {
     pub id: Ulid,
     pub username: String,

@@ -7,5 +7,5 @@ use ulid::Ulid;
 #[async_trait]
 pub trait UserRepository {
     async fn get_by_id(&self, id: Ulid) -> Result<Option<User>, Box<dyn Error>>;
-    async fn save(&self, user: User) -> Result<(), Box<dyn Error>>;
+    async fn save(&self, user: &User) -> Result<(), Box<dyn Error>>;
 }
