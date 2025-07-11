@@ -1,14 +1,14 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDateTime, Utc};
 use sqlx::FromRow;
 use ulid::Ulid;
 
 #[derive(FromRow, Debug)]
 pub struct UserDb {
-    pub id: Ulid,
+    pub id: String,
     pub username: String,
     pub password_hash: String,
     pub e2e_key_hash: String,
     pub encrypted_master_key: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }

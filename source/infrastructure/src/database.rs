@@ -1,11 +1,8 @@
-mod db_entities;
-mod enums;
+pub mod db_entities;
+pub mod enums;
 
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
-
-pub use db_entities::*;
-pub use enums::*;
 
 #[derive(Debug)]
 pub struct DatabaseSettings {
@@ -32,7 +29,7 @@ impl DatabaseSettings {
 }
 
 impl Database {
-    pub async fn init(settings: DatabaseSettings) -> Result<Self, sqlx::Error> {
+    pub async fn new(settings: DatabaseSettings) -> Result<Self, sqlx::Error> {
         let pool = PgPoolOptions::new()
             .max_connections(settings.max_connections)
             .acquire_timeout(Duration::from_secs(30))

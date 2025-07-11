@@ -1,3 +1,1 @@
-mod repositories;
-
-pub use repositories::DefaultUserRepository;
+pub mod repositories;

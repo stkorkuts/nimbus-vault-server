@@ -1,22 +1,16 @@
+pub mod builder;
 mod user;
 
 use std::error::Error;
 
-use crate::services::ApplicationServices;
 use user::RegisterUserUseCase;
 
-pub struct ApplicationUseCases<'a> {
-    register_user: RegisterUserUseCase<'a>,
+pub struct ApplicationUseCases {
+    register_user: RegisterUserUseCase,
 }
 
-impl<'a> ApplicationUseCases<'a> {
-    pub fn init(services: &'a ApplicationServices) -> Self {
-        ApplicationUseCases {
-            register_user: RegisterUserUseCase::init(services.user_repository()),
-        }
-    }
-
-    pub fn register_user(&self) -> Result<(), Box<dyn Error>> {
-        self.register_user.execute()
+impl ApplicationUseCases {
+    pub async fn register_user(&self) -> Result<(), Box<dyn Error>> {
+        self.register_user.execute().await
     }
 }

@@ -1,21 +1,25 @@
-use nimbus_vault_server_application::{ApplicationServicesBuilder, ApplicationUseCases};
-use nimbus_vault_server_infrastructure::{DatabaseSettings, InfrastructureConfigurator};
+use nimbus_vault_server_application::use_cases::builder::ApplicationUseCasesBuilder;
+use nimbus_vault_server_infrastructure::{
+    database::{Database, DatabaseSettings},
+    services::repositories::DefaultUserRepository,
+};
 use nimbus_vault_server_shared::DATABASE_URL_VAR_NAME;
+use std::sync::Arc;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let infrastructure_configurator = InfrastructureConfigurator::init(DatabaseSettings::new(
-        dotenvy::var(DATABASE_URL_VAR_NAME).unwrap(),
-    ))
-    .await?;
+    let database = Arc::new(
+        Database::new(DatabaseSettings::new(
+            dotenvy::var(DATABASE_URL_VAR_NAME).unwrap(),
+        ))
+        .await?,
+    );
 
-    let user_repository = infrastructure_configurator.configure_user_repository();
+    let user_repository = Arc::new(DefaultUserRepository::new(database));
 
-    let services = ApplicationServicesBuilder::init()
-        .with_user_repository(Box::new(user_repository))
+    let use_cases = ApplicationUseCasesBuilder::new()
+        .with_register_user(user_repository)
         .build()?;
-
-    let use_cases = ApplicationUseCases::init(&services);
 
     Ok(())
 }

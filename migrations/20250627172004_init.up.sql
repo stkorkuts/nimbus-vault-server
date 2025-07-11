@@ -6,8 +6,8 @@ CREATE TABLE Users (
     password_hash varchar(128) NOT NULL,
     e2e_key_hash varchar(64) NOT NULL,
     encrypted_master_key varchar(256) NOT NULL,
-    created_at timestamp NOT NULL,
-    updated_at timestamp NOT NULL
+    created_at timestamptz NOT NULL,
+    updated_at timestamptz NOT NULL
 );
 
 CREATE TABLE Devices (
@@ -16,9 +16,9 @@ CREATE TABLE Devices (
     name varchar(128) NOT NULL,
     device_type DeviceType NOT NULL,
     cert_fingerprint varchar NOT NULL,
-    registered_at timestamp NOT NULL,
-    last_seen_at timestamp NOT NULL,
-    revoked_at timestamp
+    registered_at timestamptz NOT NULL,
+    last_seen_at timestamptz NOT NULL,
+    revoked_at timestamptz
 );
 
 ALTER TABLE Devices

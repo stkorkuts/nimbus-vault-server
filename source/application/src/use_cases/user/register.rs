@@ -1,17 +1,17 @@
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
-use crate::UserRepository;
+use crate::services::repositories::UserRepository;
 
-pub struct RegisterUserUseCase<'a> {
-    user_repository: &'a dyn UserRepository,
+pub struct RegisterUserUseCase {
+    user_repository: Arc<dyn UserRepository>,
 }
 
-impl<'a> RegisterUserUseCase<'a> {
-    pub fn init(user_repository: &'a dyn UserRepository) -> Self {
+impl RegisterUserUseCase {
+    pub fn new(user_repository: Arc<dyn UserRepository>) -> Self {
         Self { user_repository }
     }
 
-    pub fn execute(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn execute(&self) -> Result<(), Box<dyn Error>> {
         todo!()
     }
 }
