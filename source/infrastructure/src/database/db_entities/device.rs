@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use sqlx::prelude::FromRow;
 
 use crate::database::enums::DeviceTypeDb;
@@ -10,7 +10,7 @@ pub struct DeviceDb {
     pub name: String,
     pub device_type: DeviceTypeDb,
     pub cert_fingerprint: String,
-    pub registered_at: NaiveDateTime,
-    pub last_seen_at: NaiveDateTime,
-    pub revoked_at: Option<NaiveDateTime>,
+    pub registered_at: DateTime<Utc>,
+    pub last_seen_at: DateTime<Utc>,
+    pub revoked_at: Option<DateTime<Utc>>,
 }

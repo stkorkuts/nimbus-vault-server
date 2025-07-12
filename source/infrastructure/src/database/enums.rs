@@ -1,3 +1,5 @@
+mod conversions;
+
 use sqlx::prelude::Type;
 
 #[derive(Type, Debug, Clone, Copy, PartialEq, Eq)]

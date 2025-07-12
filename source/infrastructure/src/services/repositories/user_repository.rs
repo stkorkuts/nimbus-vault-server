@@ -5,7 +5,7 @@ use ulid::Ulid;
 
 use std::{error::Error, sync::Arc};
 
-use crate::database::{Database, db_entities::user::UserDb};
+use crate::database::{Database, db_entities::UserDb};
 
 pub struct DefaultUserRepository {
     database: Arc<Database>,
@@ -23,8 +23,8 @@ impl DefaultUserRepository {
             password_hash: user.password_hash().to_string(),
             e2e_key_hash: user.e2e_key_hash().to_string(),
             encrypted_master_key: user.encrypted_master_key().to_string(),
-            created_at: user.created_at().naive_utc(),
-            updated_at: user.updated_at().naive_utc(),
+            created_at: user.created_at(),
+            updated_at: user.updated_at(),
         }
     }
 
@@ -35,8 +35,8 @@ impl DefaultUserRepository {
             password_hash: user_db.password_hash,
             e2e_key_hash: user_db.e2e_key_hash,
             encrypted_master_key: user_db.encrypted_master_key,
-            created_at: user_db.created_at.and_utc(),
-            updated_at: user_db.updated_at.and_utc(),
+            created_at: user_db.created_at,
+            updated_at: user_db.updated_at,
         })
     }
 }
@@ -66,7 +66,8 @@ impl UserRepository for DefaultUserRepository {
             r#"
             insert into users
             (id, username, password_hash, e2e_key_hash, encrypted_master_key, created_at, updated_at)
-            values ($1, $2, $3, $4, $5, $6, $7)
+            values 
+            ($1, $2, $3, $4, $5, $6, $7)
             on conflict (id) do update
             set username = excluded.username,
                 password_hash = excluded.password_hash,
