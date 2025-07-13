@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use nimbus_vault_server_domain::entities::Device;
 
 #[async_trait]
-pub trait DeviceRepository {
+pub trait DeviceRepository: Send + Sync {
     async fn get_by_fingerprint(
         &self,
         cert_fingerprint: &str,
