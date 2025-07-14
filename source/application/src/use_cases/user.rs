@@ -1,3 +1,2 @@
-mod register;
-
-pub use register::RegisterUserUseCase;
+pub mod register;
+pub mod schema;

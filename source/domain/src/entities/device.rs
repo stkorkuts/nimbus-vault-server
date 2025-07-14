@@ -7,8 +7,6 @@ use ulid::Ulid;
 
 use crate::enums::DeviceType;
 
-pub use specifications::*;
-
 #[derive(Debug)]
 pub struct Device {
     id: Ulid,

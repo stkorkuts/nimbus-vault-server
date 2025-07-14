@@ -5,8 +5,6 @@ use std::error::Error;
 use chrono::{DateTime, Utc};
 use ulid::Ulid;
 
-pub use specifications::*;
-
 #[derive(Debug)]
 pub struct User {
     id: Ulid,
