@@ -1,7 +1,9 @@
 use std::{error::Error, sync::Arc};
 
 use crate::{
-    services::{crypto::CryptoService, repositories::UserRepository, time::TimeService},
+    services::{
+        crypto::CryptoService, repositories::user_repository::UserRepository, time::TimeService,
+    },
     use_cases::{ApplicationUseCases, user::register::RegisterUserUseCase},
 };
 

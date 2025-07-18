@@ -1,11 +1,13 @@
 use std::{error::Error, sync::Arc};
 
 use async_trait::async_trait;
-use nimbus_vault_server_application::services::repositories::DeviceRepository;
-use nimbus_vault_server_domain::entities::{Device, RestoreDeviceSpecification};
+use nimbus_vault_server_application::services::repositories::device_repository::DeviceRepository;
+use nimbus_vault_server_domain::entities::device::{
+    Device, specifications::RestoreDeviceSpecification,
+};
 use ulid::Ulid;
 
-use crate::database::{Database, db_entities::DeviceDb, enums::DeviceTypeDb};
+use crate::database::{Database, db_entities::device::DeviceDb, enums::DeviceTypeDb};
 
 pub struct DefaultDeviceRepository {
     database: Arc<Database>,

@@ -1,11 +1,11 @@
 use async_trait::async_trait;
-use nimbus_vault_server_application::services::repositories::UserRepository;
-use nimbus_vault_server_domain::entities::{RestoreUserSpecification, User};
+use nimbus_vault_server_application::services::repositories::user_repository::UserRepository;
+use nimbus_vault_server_domain::entities::user::{User, specifications::RestoreUserSpecification};
 use ulid::Ulid;
 
 use std::{error::Error, sync::Arc};
 
-use crate::database::{Database, db_entities::UserDb};
+use crate::database::{Database, db_entities::user::UserDb};
 
 pub struct DefaultUserRepository {
     database: Arc<Database>,

@@ -1,13 +1,16 @@
-use nimbus_vault_server_application::use_cases::ApplicationUseCasesBuilder;
+use std::sync::Arc;
+
+use nimbus_vault_server_application::use_cases::builder::ApplicationUseCasesBuilder;
 use nimbus_vault_server_infrastructure::{
     database::{Database, DatabaseSettings},
     services::{
-        repositories::{DefaultDeviceRepository, DefaultUserRepository},
+        repositories::{
+            device_repository::DefaultDeviceRepository, user_repository::DefaultUserRepository,
+        },
         time::DefaultTimeService,
     },
 };
-use nimbus_vault_server_shared::DATABASE_URL_VAR_NAME;
-use std::sync::Arc;
+use nimbus_vault_server_shared::environment::DATABASE_URL_VAR_NAME;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

@@ -1,11 +1,13 @@
-mod schema;
+pub mod schema;
 
 use std::{error::Error, sync::Arc};
 
-use nimbus_vault_server_domain::entities::{NewUserSpecification, User};
+use nimbus_vault_server_domain::entities::user::{User, specifications::NewUserSpecification};
 
 use crate::{
-    services::{crypto::CryptoService, repositories::UserRepository, time::TimeService},
+    services::{
+        crypto::CryptoService, repositories::user_repository::UserRepository, time::TimeService,
+    },
     use_cases::user::register::schema::{RegisterUserRequestSchema, RegisterUserResponseSchema},
 };
 

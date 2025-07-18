@@ -1,5 +1,5 @@
-mod builder;
-mod user;
+pub mod builder;
+pub mod user;
 
 use std::error::Error;
 

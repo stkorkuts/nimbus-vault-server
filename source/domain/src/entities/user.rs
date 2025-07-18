@@ -1,4 +1,4 @@
-mod specifications;
+pub mod specifications;
 
 use std::error::Error;
 
@@ -45,7 +45,7 @@ impl User {
         self.updated_at
     }
 
-    pub fn new(specs: NewUserSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn new(specs: specifications::NewUserSpecification) -> Result<Self, Box<dyn Error>> {
         Self::validate(
             specs.username.as_str(),
             specs.password_hash.as_str(),
@@ -64,7 +64,9 @@ impl User {
         })
     }
 
-    pub fn restore(specs: RestoreUserSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn restore(
+        specs: specifications::RestoreUserSpecification,
+    ) -> Result<Self, Box<dyn Error>> {
         Self::validate(
             specs.username.as_str(),
             specs.password_hash.as_str(),

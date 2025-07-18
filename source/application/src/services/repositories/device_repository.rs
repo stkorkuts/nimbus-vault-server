@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use async_trait::async_trait;
-use nimbus_vault_server_domain::entities::Device;
+use nimbus_vault_server_domain::entities::device::Device;
 
 #[async_trait]
 pub trait DeviceRepository: Send + Sync {

@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use async_trait::async_trait;
-use nimbus_vault_server_domain::entities::User;
+use nimbus_vault_server_domain::entities::user::User;
 use ulid::Ulid;
 
 #[async_trait]

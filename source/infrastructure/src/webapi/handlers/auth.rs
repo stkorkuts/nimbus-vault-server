@@ -1,28 +1,44 @@
 use std::sync::Arc;
 
-use axum::{body::Bytes, extract::State, response::IntoResponse};
-use hyper::StatusCode;
-use nimbus_vault_server_application::use_cases::ApplicationUseCases;
-use nimbus_vault_server_application::use_cases::RegisterUserRequestSchema;
+use axum::{
+    body::Bytes,
+    extract::State,
+    response::{IntoResponse, Response},
+};
+use hyper::{StatusCode, header::CONTENT_TYPE};
+use nimbus_vault_server_application::use_cases::{
+    ApplicationUseCases, user::register::schema::RegisterUserRequestSchema,
+};
 use prost::Message;
 
-use crate::proto::RegisterUserRequest;
+use crate::proto::{RegisterUserRequest, RegisterUserResponse, User};
 
 pub async fn register_user(
     State(use_cases): State<Arc<ApplicationUseCases>>,
     body: Bytes,
-) -> impl IntoResponse {
-    let request = match RegisterUserRequest::decode(body.as_ref()) {
+) -> Response {
+    let RegisterUserRequest {
+        username,
+        password,
+        e2e_key_hash,
+        encrypted_master_key,
+    } = match RegisterUserRequest::decode(body.as_ref()) {
         Ok(req) => req,
         Err(_) => {
             return (
                 StatusCode::BAD_REQUEST,
                 "Invalid protobuf message".to_owned(),
-            );
+            )
+                .into_response();
         }
     };
 
-    let request = RegisterUserRequestSchema {};
+    let request = RegisterUserRequestSchema {
+        username,
+        password,
+        e2e_key_hash,
+        encrypted_master_key,
+    };
 
     let result = match use_cases.register_user(request).await {
         Ok(res) => res,
@@ -30,9 +46,23 @@ pub async fn register_user(
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Error while processing user registration".to_owned(),
-            );
+            )
+                .into_response();
         }
     };
 
-    todo!()
+    let response = RegisterUserResponse {
+        user: Some(User {
+            id: result.user.id,
+            username: result.user.username,
+            encrypted_master_key: result.user.encrypted_master_key,
+        }),
+    };
+
+    (
+        StatusCode::CREATED,
+        [(CONTENT_TYPE, "application/x-protobuf")],
+        response.encode_to_vec(),
+    )
+        .into_response()
 }

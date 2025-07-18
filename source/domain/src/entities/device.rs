@@ -1,4 +1,4 @@
-mod specifications;
+pub mod specifications;
 
 use std::error::Error;
 
@@ -52,7 +52,7 @@ impl Device {
         self.revoked_at
     }
 
-    pub fn new(specs: NewDeviceSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn new(specs: specifications::NewDeviceSpecification) -> Result<Self, Box<dyn Error>> {
         Self::validate(specs.name.as_str())?;
         let id = Ulid::new();
         Ok(Device {
@@ -67,7 +67,9 @@ impl Device {
         })
     }
 
-    pub fn restore(specs: RestoreDeviceSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn restore(
+        specs: specifications::RestoreDeviceSpecification,
+    ) -> Result<Self, Box<dyn Error>> {
         Self::validate(specs.name.as_str())?;
         Ok(Device {
             id: specs.id,
