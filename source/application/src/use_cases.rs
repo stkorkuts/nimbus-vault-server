@@ -4,8 +4,7 @@ pub mod user;
 use std::error::Error;
 
 use crate::use_cases::user::register::{
-    RegisterUserUseCase,
-    schema::{RegisterUserRequestSchema, RegisterUserResponseSchema},
+    RegisterUserRequestSchema, RegisterUserResponseSchema, RegisterUserUseCase,
 };
 
 pub struct ApplicationUseCases {

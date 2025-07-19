@@ -7,7 +7,7 @@ use axum::{
 };
 use hyper::{StatusCode, header::CONTENT_TYPE};
 use nimbus_vault_server_application::use_cases::{
-    ApplicationUseCases, user::register::schema::RegisterUserRequestSchema,
+    ApplicationUseCases, user::register::RegisterUserRequestSchema,
 };
 use prost::Message;
 

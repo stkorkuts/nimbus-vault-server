@@ -1,5 +1,3 @@
-pub mod schema;
-
 use std::{error::Error, sync::Arc};
 
 use nimbus_vault_server_domain::entities::user::{User, specifications::NewUserSpecification};
@@ -8,8 +6,19 @@ use crate::{
     services::{
         crypto::CryptoService, repositories::user_repository::UserRepository, time::TimeService,
     },
-    use_cases::user::register::schema::{RegisterUserRequestSchema, RegisterUserResponseSchema},
+    use_cases::user::UserSchema,
 };
+
+pub struct RegisterUserRequestSchema {
+    pub username: String,
+    pub password: String,
+    pub e2e_key_hash: String,
+    pub encrypted_master_key: String,
+}
+
+pub struct RegisterUserResponseSchema {
+    pub user: UserSchema,
+}
 
 pub struct RegisterUserUseCase {
     user_repository: Arc<dyn UserRepository>,
