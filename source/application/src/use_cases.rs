@@ -1,4 +1,5 @@
 pub mod builder;
+pub mod device;
 pub mod user;
 
 use std::error::Error;

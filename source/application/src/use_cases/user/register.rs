@@ -57,6 +57,13 @@ impl RegisterUserUseCase {
             encrypted_master_key,
             current_time,
         })?;
-        todo!()
+        self.user_repository.save(&user).await?;
+        Ok(RegisterUserResponseSchema {
+            user: UserSchema {
+                id: user.id().to_string(),
+                username: user.username().to_owned(),
+                encrypted_master_key: user.encrypted_master_key().to_owned(),
+            },
+        })
     }
 }
