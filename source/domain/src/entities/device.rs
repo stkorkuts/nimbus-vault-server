@@ -1,11 +1,10 @@
+pub mod errors;
 pub mod specifications;
-
-use std::error::Error;
 
 use chrono::{DateTime, Utc};
 use ulid::Ulid;
 
-use crate::enums::DeviceType;
+use crate::{entities::device::errors::DeviceError, enums::DeviceType};
 
 #[derive(Debug)]
 pub struct Device {
@@ -52,7 +51,7 @@ impl Device {
         self.revoked_at
     }
 
-    pub fn new(specs: specifications::NewDeviceSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn new(specs: specifications::NewDeviceSpecification) -> Result<Self, DeviceError> {
         Self::validate(specs.name.as_str())?;
         let id = Ulid::new();
         Ok(Device {
@@ -67,9 +66,7 @@ impl Device {
         })
     }
 
-    pub fn restore(
-        specs: specifications::RestoreDeviceSpecification,
-    ) -> Result<Self, Box<dyn Error>> {
+    pub fn restore(specs: specifications::RestoreDeviceSpecification) -> Result<Self, DeviceError> {
         Self::validate(specs.name.as_str())?;
         Ok(Device {
             id: specs.id,
@@ -83,7 +80,7 @@ impl Device {
         })
     }
 
-    fn validate(name: &str) -> Result<(), Box<dyn Error>> {
+    fn validate(name: &str) -> Result<(), DeviceError> {
         todo!()
     }
 }

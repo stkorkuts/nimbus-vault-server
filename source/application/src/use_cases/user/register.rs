@@ -1,12 +1,15 @@
-use std::{error::Error, sync::Arc};
+pub mod errors;
+
+use std::sync::Arc;
 
 use nimbus_vault_server_domain::entities::user::{User, specifications::NewUserSpecification};
 
 use crate::{
+    errors::ApplicationError,
     services::{
         crypto::CryptoService, repositories::user_repository::UserRepository, time::TimeService,
     },
-    use_cases::user::UserSchema,
+    use_cases::user::{UserSchema, register::errors::RegisterUserUseCaseError},
 };
 
 pub struct RegisterUserRequestSchema {
@@ -47,7 +50,7 @@ impl RegisterUserUseCase {
             e2e_key_hash,
             encrypted_master_key,
         }: RegisterUserRequestSchema,
-    ) -> Result<RegisterUserResponseSchema, Box<dyn Error>> {
+    ) -> Result<RegisterUserResponseSchema, RegisterUserUseCaseError> {
         let password_hash = self.crypto_service.get_password_hash(password).await;
         let current_time = self.time_service.get_current_time().await?;
         let user = User::new(NewUserSpecification {

@@ -14,7 +14,7 @@ impl DefaultTimeService {
 
 #[async_trait]
 impl TimeService for DefaultTimeService {
-    async fn get_current_time(&self) -> Result<DateTime<Utc>, Box<dyn Error>> {
+    async fn get_current_time(&self) -> Result<DateTime<Utc>, ApplicationError> {
         Ok(Utc::now())
     }
 }

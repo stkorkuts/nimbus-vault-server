@@ -1,9 +1,10 @@
+pub mod errors;
 pub mod specifications;
-
-use std::error::Error;
 
 use chrono::{DateTime, Utc};
 use ulid::Ulid;
+
+use crate::entities::user::errors::UserError;
 
 #[derive(Debug)]
 pub struct User {
@@ -45,7 +46,7 @@ impl User {
         self.updated_at
     }
 
-    pub fn new(specs: specifications::NewUserSpecification) -> Result<Self, Box<dyn Error>> {
+    pub fn new(specs: specifications::NewUserSpecification) -> Result<Self, UserError> {
         Self::validate(
             specs.username.as_str(),
             specs.password_hash.as_str(),
@@ -64,9 +65,7 @@ impl User {
         })
     }
 
-    pub fn restore(
-        specs: specifications::RestoreUserSpecification,
-    ) -> Result<Self, Box<dyn Error>> {
+    pub fn restore(specs: specifications::RestoreUserSpecification) -> Result<Self, UserError> {
         Self::validate(
             specs.username.as_str(),
             specs.password_hash.as_str(),
@@ -89,7 +88,7 @@ impl User {
         password_hash: &str,
         e2e_key_hash: &str,
         encrypted_master_key: &str,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), UserError> {
         todo!()
     }
 }

@@ -28,7 +28,7 @@ impl DefaultUserRepository {
         }
     }
 
-    fn to_domain_entity(&self, user_db: UserDb) -> Result<User, Box<dyn Error>> {
+    fn to_domain_entity(&self, user_db: UserDb) -> Result<User, ApplicationError> {
         User::restore(RestoreUserSpecification {
             id: Ulid::from_string(user_db.id.as_str())?,
             username: user_db.username,
@@ -43,7 +43,7 @@ impl DefaultUserRepository {
 
 #[async_trait]
 impl UserRepository for DefaultUserRepository {
-    async fn get_by_id(&self, id: ulid::Ulid) -> Result<Option<User>, Box<dyn Error>> {
+    async fn get_by_id(&self, id: ulid::Ulid) -> Result<Option<User>, ApplicationError> {
         let id_str = id.to_string();
         sqlx::query_as!(
             UserDb,
@@ -60,7 +60,7 @@ impl UserRepository for DefaultUserRepository {
         .transpose()
     }
 
-    async fn save(&self, user: &User) -> Result<(), Box<dyn Error>> {
+    async fn save(&self, user: &User) -> Result<(), ApplicationError> {
         let user_db = self.to_db_entity(user);
         sqlx::query!(
             r#"

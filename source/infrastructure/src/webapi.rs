@@ -36,7 +36,7 @@ impl WebApi {
             .with_state(use_cases)
     }
 
-    pub async fn serve(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn serve(&self) -> Result<(), ApplicationError> {
         let listener = TcpListener::bind(self.settings.base_addr.as_str()).await?;
         serve(listener, self.router.clone()).await?;
         Ok(())

@@ -1046,6 +1046,7 @@ dependencies = [
  "chrono",
  "nimbus_vault_server_domain",
  "nimbus_vault_server_shared",
+ "thiserror",
  "ulid",
 ]
 

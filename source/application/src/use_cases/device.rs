@@ -1,3 +1,4 @@
+pub mod errors;
 pub mod register;
 
 pub struct DeviceSchema {

@@ -1,11 +1,11 @@
 pub mod builder;
 pub mod device;
+pub mod errors;
 pub mod user;
-
-use std::error::Error;
 
 use crate::use_cases::user::register::{
     RegisterUserRequestSchema, RegisterUserResponseSchema, RegisterUserUseCase,
+    errors::RegisterUserUseCaseError,
 };
 
 pub struct ApplicationUseCases {
@@ -16,7 +16,7 @@ impl ApplicationUseCases {
     pub async fn register_user(
         &self,
         request: RegisterUserRequestSchema,
-    ) -> Result<RegisterUserResponseSchema, Box<dyn Error>> {
+    ) -> Result<RegisterUserResponseSchema, RegisterUserUseCaseError> {
         self.register_user.execute(request).await
     }
 }

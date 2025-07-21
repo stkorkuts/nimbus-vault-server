@@ -1,10 +1,15 @@
-use std::{error::Error, sync::Arc};
+pub mod errors;
+
+use std::sync::Arc;
 
 use crate::{
     services::{
         crypto::CryptoService, repositories::user_repository::UserRepository, time::TimeService,
     },
-    use_cases::{ApplicationUseCases, user::register::RegisterUserUseCase},
+    use_cases::{
+        ApplicationUseCases, builder::errors::UseCasesBuilderError,
+        user::register::RegisterUserUseCase,
+    },
 };
 
 pub struct ApplicationUseCasesBuilder {
@@ -37,19 +42,25 @@ impl ApplicationUseCasesBuilder {
         self
     }
 
-    pub fn build(&self) -> Result<ApplicationUseCases, Box<dyn Error>> {
-        let user_repository = self
-            .user_repository
-            .as_ref()
-            .ok_or("User repository is required")?;
-        let time_service = self
-            .time_service
-            .as_ref()
-            .ok_or("Time service is required")?;
-        let crypto_service = self
-            .crypto_service
-            .as_ref()
-            .ok_or("Crypto service is required")?;
+    pub fn build(&self) -> Result<ApplicationUseCases, UseCasesBuilderError> {
+        let user_repository =
+            self.user_repository
+                .as_ref()
+                .ok_or(UseCasesBuilderError::ServiceIsMissing {
+                    service_name: "UserRepository".to_owned(),
+                })?;
+        let time_service =
+            self.time_service
+                .as_ref()
+                .ok_or(UseCasesBuilderError::ServiceIsMissing {
+                    service_name: "TimeService".to_owned(),
+                })?;
+        let crypto_service =
+            self.crypto_service
+                .as_ref()
+                .ok_or(UseCasesBuilderError::ServiceIsMissing {
+                    service_name: "CryptoService".to_owned(),
+                })?;
 
         Ok(ApplicationUseCases {
             register_user: RegisterUserUseCase::new(

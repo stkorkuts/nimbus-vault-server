@@ -1,15 +1,25 @@
+pub mod errors;
+
 use std::{error::Error, sync::Arc};
 
 use nimbus_vault_server_domain::enums::DeviceType;
 
 use crate::{
+    errors::ApplicationError,
     services::{
         auth::AuthService,
         crypto::CryptoService,
-        repositories::{device_repository::DeviceRepository, user_repository::UserRepository},
+        errors::ServiceError,
+        repositories::{
+            device_repository::DeviceRepository, errors::RepositoryError,
+            user_repository::UserRepository,
+        },
         time::TimeService,
     },
-    use_cases::{device::DeviceSchema, user::UserSchema},
+    use_cases::{
+        device::{DeviceSchema, register::errors::RegisterDeviceUseCaseError},
+        user::UserSchema,
+    },
 };
 
 pub struct RegisterDeviceRequestSchema {
@@ -62,8 +72,16 @@ impl RegisterDeviceUseCase {
             device_name,
             device_type,
         }: RegisterDeviceRequestSchema,
-    ) -> Result<RegisterDeviceResponeSchema, Box<dyn Error>> {
-        // get user from repo if username exists
+    ) -> Result<RegisterDeviceResponeSchema, RegisterDeviceUseCaseError> {
+        let user = self
+            .user_repository
+            .get_by_username(username)
+            .await
+            .map_err(RepositoryError::from)
+            .map_err(ServiceError::from)?
+            .ok_or(RegisterDeviceUseCaseError::UserNotFound)?;
+        let password_hash = self.crypto_service.get_password_hash(password).await?;
+
         // generate password hash to check if it is valid
         // validate if e2e key hash is the same
         // sign certificate and generate a fingerprint

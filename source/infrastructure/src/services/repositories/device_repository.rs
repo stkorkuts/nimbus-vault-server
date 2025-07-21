@@ -31,7 +31,7 @@ impl DefaultDeviceRepository {
         }
     }
 
-    fn to_domain_entity(&self, device_db: DeviceDb) -> Result<Device, Box<dyn Error>> {
+    fn to_domain_entity(&self, device_db: DeviceDb) -> Result<Device, ApplicationError> {
         Device::restore(RestoreDeviceSpecification {
             id: Ulid::from_string(device_db.id.as_str())?,
             user_id: Ulid::from_string(device_db.user_id.as_str())?,
@@ -50,7 +50,7 @@ impl DeviceRepository for DefaultDeviceRepository {
     async fn get_by_fingerprint(
         &self,
         cert_fingerprint: &str,
-    ) -> Result<Option<Device>, Box<dyn Error>> {
+    ) -> Result<Option<Device>, ApplicationError> {
         sqlx::query_as!(
             DeviceDb,
             r#"
@@ -65,7 +65,7 @@ impl DeviceRepository for DefaultDeviceRepository {
         .map(|device_db| self.to_domain_entity(device_db))
         .transpose()
     }
-    async fn save(&self, device: Device) -> Result<(), Box<dyn Error>> {
+    async fn save(&self, device: Device) -> Result<(), ApplicationError> {
         let device_db = self.to_db_entity(device);
         sqlx::query!(
             r#"
