@@ -1,19 +1,7 @@
-use std::{error::Error, fmt::Display};
+use thiserror::Error;
 
-#[derive(Debug)]
-
+#[derive(Debug, Error)]
 pub enum DeviceError {
+    #[error("Invalid device name. Error: {error_message}")]
     InvalidName { error_message: String },
 }
-
-impl Display for DeviceError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidName { error_message } => {
-                write!(f, "Invalid device name. Error: {}", error_message)
-            }
-        }
-    }
-}
-
-impl Error for DeviceError {}

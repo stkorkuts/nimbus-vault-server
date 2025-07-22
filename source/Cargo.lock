@@ -1056,6 +1056,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "nimbus_vault_server_shared",
+ "thiserror",
  "ulid",
 ]
 
@@ -1077,6 +1078,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sqlx",
+ "thiserror",
  "tokio",
  "tower",
  "tower-http",

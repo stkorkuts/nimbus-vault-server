@@ -3,7 +3,10 @@ pub mod errors;
 use std::{error::Error, sync::Arc};
 
 use nimbus_vault_server_domain::{
-    entities::device::{Device, specifications::NewDeviceSpecification},
+    entities::{
+        device::{Device, specifications::NewDeviceSpecification},
+        user::value_objects::UserPassword,
+    },
     enums::DeviceType,
 };
 
@@ -81,7 +84,11 @@ impl RegisterDeviceUseCase {
             .get_by_username(&username)
             .await?
             .ok_or(RegisterDeviceUseCaseError::UserNotFound)?;
-        let password_hash = self.crypto_service.get_password_hash(&password).await?;
+        let password = UserPassword::new(password.as_str())?;
+        let password_hash = self
+            .crypto_service
+            .get_user_password_hash(&password)
+            .await?;
         if password_hash != user.password_hash() {
             return Err(RegisterDeviceUseCaseError::WrongPassword);
         }

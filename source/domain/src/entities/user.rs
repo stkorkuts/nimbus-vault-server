@@ -1,5 +1,6 @@
 pub mod errors;
 pub mod specifications;
+pub mod value_objects;
 
 use chrono::{DateTime, Utc};
 use ulid::Ulid;

@@ -1,18 +1,11 @@
-use std::{error::Error, fmt::Display};
+use thiserror::Error;
 
-#[derive(Debug)]
+use crate::entities::user::value_objects::errors::{UserPasswordError, UsernameError};
+
+#[derive(Debug, Error)]
 pub enum UserError {
-    InvalidUsername { error_message: String },
+    #[error(transparent)]
+    Username(#[from] UsernameError),
+    #[error(transparent)]
+    Password(#[from] UserPasswordError),
 }
-
-impl Display for UserError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidUsername { error_message } => {
-                write!(f, "Invalid username. Error message: {}", error_message)
-            }
-        }
-    }
-}
-
-impl Error for UserError {}
