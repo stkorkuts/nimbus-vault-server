@@ -2,7 +2,10 @@ pub mod errors;
 
 use std::{error::Error, sync::Arc};
 
-use nimbus_vault_server_domain::enums::DeviceType;
+use nimbus_vault_server_domain::{
+    entities::device::{Device, specifications::NewDeviceSpecification},
+    enums::DeviceType,
+};
 
 use crate::{
     errors::ApplicationError,
@@ -34,7 +37,7 @@ pub struct RegisterDeviceRequestSchema {
 pub struct RegisterDeviceResponeSchema {
     pub user: UserSchema,
     pub device: DeviceSchema,
-    pub certificate_sign_response: Vec<u8>,
+    pub signed_certificate: Vec<u8>,
 }
 
 pub struct RegisterDeviceUseCase {
@@ -75,18 +78,37 @@ impl RegisterDeviceUseCase {
     ) -> Result<RegisterDeviceResponeSchema, RegisterDeviceUseCaseError> {
         let user = self
             .user_repository
-            .get_by_username(username)
-            .await
-            .map_err(RepositoryError::from)
-            .map_err(ServiceError::from)?
+            .get_by_username(&username)
+            .await?
             .ok_or(RegisterDeviceUseCaseError::UserNotFound)?;
-        let password_hash = self.crypto_service.get_password_hash(password).await?;
-
-        // generate password hash to check if it is valid
-        // validate if e2e key hash is the same
-        // sign certificate and generate a fingerprint
-        // save device to the database
-        // return user info + device info + signed certificate
-        todo!()
+        let password_hash = self.crypto_service.get_password_hash(&password).await?;
+        if password_hash != user.password_hash() {
+            return Err(RegisterDeviceUseCaseError::WrongPassword);
+        }
+        if e2e_key_hash != user.e2e_key_hash() {
+            return Err(RegisterDeviceUseCaseError::WrongE2EKey);
+        }
+        let signed_certificate = self
+            .auth_service
+            .sign_certificate(&certificate_sign_request)
+            .await?;
+        let certificate_fingerprint = self
+            .auth_service
+            .get_certificate_fingerprint(&signed_certificate)
+            .await?;
+        let current_time = self.time_service.get_current_time().await?;
+        let device = Device::new(NewDeviceSpecification {
+            user_id: user.id(),
+            name: device_name,
+            device_type,
+            cert_fingerprint: certificate_fingerprint,
+            current_time,
+        })?;
+        self.device_repository.save(&device).await?;
+        Ok(RegisterDeviceResponeSchema {
+            user: UserSchema::from(user),
+            device: DeviceSchema::from(device),
+            signed_certificate,
+        })
     }
 }

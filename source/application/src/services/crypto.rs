@@ -6,5 +6,5 @@ use crate::services::crypto::errors::CryptoServiceError;
 
 #[async_trait]
 pub trait CryptoService: Send + Sync {
-    async fn get_password_hash(&self, password: String) -> Result<String, CryptoServiceError>;
+    async fn get_password_hash(&self, password: &str) -> Result<String, CryptoServiceError>;
 }

@@ -11,5 +11,5 @@ pub trait DeviceRepository: Send + Sync {
         &self,
         cert_fingerprint: &str,
     ) -> Result<Option<Device>, DeviceRepositoryError>;
-    async fn save(&self, device: Device) -> Result<(), DeviceRepositoryError>;
+    async fn save(&self, device: &Device) -> Result<(), DeviceRepositoryError>;
 }
