@@ -17,7 +17,7 @@ use sha2::Sha256;
 pub struct DefaultCryptoService {}
 
 impl DefaultCryptoService {
-    fn hash_pbkdf2_sha256(
+    fn _hash_pbkdf2_sha256(
         &self,
         password: &str,
         iterations: u32,
@@ -32,7 +32,24 @@ impl DefaultCryptoService {
         Ok(hash)
     }
 
-    fn verify_pbkdf2_sha256_parts(
+    fn hash_pbkdf2_sha256(
+        &self,
+        password: &str,
+        iterations: u32,
+        salt_len: usize,
+    ) -> Result<String, CryptoServiceError> {
+        let mut salt = vec![0u8; salt_len];
+        rand::rng().fill(&mut salt[..]);
+        let hash = self._hash_pbkdf2_sha256(password, iterations, &salt)?;
+        let salt_hex = hex::encode(&salt);
+        let hash_hex = hex::encode(hash);
+        Ok(format!(
+            "$pbkdf2-sha256${}${}${}${}",
+            iterations, salt_len, salt_hex, hash_hex
+        ))
+    }
+
+    fn verify_pbkdf2_sha256(
         &self,
         password: &str,
         iterations: u32,
@@ -43,25 +60,17 @@ impl DefaultCryptoService {
         let salt = hex::decode(salt_hex).map_err(|_| CryptoServiceError::InvalidFormat {
             error_message: "Salt is not valid hex".to_string(),
         })?;
-        let hash = hex::decode(hash_hex).map_err(|_| CryptoServiceError::InvalidFormat {
-            error_message: "Hash is not valid hex".to_string(),
-        })?;
-        if salt.len() != salt_len || hash.len() != 32 {
+        let expected_hash =
+            hex::decode(hash_hex).map_err(|_| CryptoServiceError::InvalidFormat {
+                error_message: "Hash is not valid hex".to_string(),
+            })?;
+        if salt.len() != salt_len || expected_hash.len() != 32 {
             return Err(CryptoServiceError::InvalidFormat {
                 error_message: "Salt or hash has invalid length".to_string(),
             });
         }
-        self.verify_pbkdf2_sha256(password, iterations, &salt, &hash)
-    }
-    fn verify_pbkdf2_sha256(
-        &self,
-        password: &str,
-        iterations: u32,
-        salt: &[u8],
-        expected_hash: &[u8],
-    ) -> Result<bool, CryptoServiceError> {
-        let hash = self.hash_pbkdf2_sha256(password, iterations, salt)?;
-        Ok(expected_hash == hash)
+        let password_hash = self._hash_pbkdf2_sha256(password, iterations, &salt)?;
+        Ok(expected_hash == password_hash)
     }
 }
 
@@ -81,15 +90,7 @@ impl CryptoService for DefaultCryptoService {
             PasswordHashAlgorithm::Pbkdf2Sha256 {
                 iterations,
                 salt_len,
-            } => {
-                let mut salt = vec![0u8; salt_len];
-                rand::rng().fill(&mut salt[..]);
-                let hash = self.hash_pbkdf2_sha256(password_value, iterations, &salt)?;
-                let salt_hex = hex::encode(&salt);
-                let hash_hex = hex::encode(hash);
-                let formatted = format!("${}${}${}", algorithm.to_string(), salt_hex, hash_hex);
-                Ok(formatted)
-            }
+            } => self.hash_pbkdf2_sha256(password_value, iterations, salt_len),
         }
     }
 
@@ -114,13 +115,9 @@ impl CryptoService for DefaultCryptoService {
             PasswordHashAlgorithm::Pbkdf2Sha256 {
                 iterations,
                 salt_len,
-            } => self.verify_pbkdf2_sha256_parts(
-                password_value,
-                iterations,
-                salt_len,
-                salt_hex,
-                hash_hex,
-            ),
+            } => {
+                self.verify_pbkdf2_sha256(password_value, iterations, salt_len, salt_hex, hash_hex)
+            }
         }
     }
 }
