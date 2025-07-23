@@ -3,13 +3,20 @@ pub mod device;
 pub mod errors;
 pub mod user;
 
-use crate::use_cases::user::register::{
-    RegisterUserRequestSchema, RegisterUserResponseSchema, RegisterUserUseCase,
-    errors::RegisterUserUseCaseError,
+use crate::use_cases::{
+    device::register::{
+        RegisterDeviceRequestSchema, RegisterDeviceResponeSchema, RegisterDeviceUseCase,
+        errors::RegisterDeviceUseCaseError,
+    },
+    user::register::{
+        RegisterUserRequestSchema, RegisterUserResponseSchema, RegisterUserUseCase,
+        errors::RegisterUserUseCaseError,
+    },
 };
 
 pub struct ApplicationUseCases {
     register_user: RegisterUserUseCase,
+    register_device: RegisterDeviceUseCase,
 }
 
 impl ApplicationUseCases {
@@ -18,5 +25,12 @@ impl ApplicationUseCases {
         request: RegisterUserRequestSchema,
     ) -> Result<RegisterUserResponseSchema, RegisterUserUseCaseError> {
         self.register_user.execute(request).await
+    }
+
+    pub async fn register_device(
+        &self,
+        request: RegisterDeviceRequestSchema,
+    ) -> Result<RegisterDeviceResponeSchema, RegisterDeviceUseCaseError> {
+        self.register_device.execute(request).await
     }
 }
