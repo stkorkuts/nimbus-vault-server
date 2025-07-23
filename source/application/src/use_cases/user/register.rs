@@ -58,7 +58,7 @@ impl RegisterUserUseCase {
         let password = UserPassword::new(password.as_str())?;
         let password_hash = self
             .crypto_service
-            .get_user_password_hash(&password)
+            .get_user_password_hash(&password, None)
             .await?;
         let current_time = self.time_service.get_current_time().await?;
         let user = User::new(NewUserSpecification {

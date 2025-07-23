@@ -87,9 +87,13 @@ impl RegisterDeviceUseCase {
         let password = UserPassword::new(password.as_str())?;
         let password_hash = self
             .crypto_service
-            .get_user_password_hash(&password)
+            .get_user_password_hash(&password, None)
             .await?;
-        if password_hash != user.password_hash() {
+        if !self
+            .crypto_service
+            .verify_user_password(&password, password_hash.as_str())
+            .await?
+        {
             return Err(RegisterDeviceUseCaseError::WrongPassword);
         }
         if e2e_key_hash != user.e2e_key_hash() {

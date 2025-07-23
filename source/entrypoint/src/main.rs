@@ -28,6 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let use_cases = Arc::new(
         ApplicationUseCasesBuilder::new()
             .with_user_repository(user_repository.clone())
+            .with_device_repository(device_repository.clone())
             .with_time_service(time_service.clone())
             .build()?,
     );
