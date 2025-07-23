@@ -1,5 +1,6 @@
 pub mod errors;
 mod handlers;
+mod middleware;
 
 use std::sync::Arc;
 

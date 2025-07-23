@@ -1,11 +1,10 @@
 use std::sync::Arc;
 
-use nimbus_vault_server_application::{
-    services::crypto::CryptoService, use_cases::builder::ApplicationUseCasesBuilder,
-};
+use nimbus_vault_server_application::use_cases::builder::ApplicationUseCasesBuilder;
 use nimbus_vault_server_infrastructure::{
     database::{Database, DatabaseSettings},
     services::{
+        auth::{AuthSettings, DefaultAuthService},
         crypto::DefaultCryptoService,
         repositories::{
             device_repository::DefaultDeviceRepository, user_repository::DefaultUserRepository,
@@ -14,12 +13,18 @@ use nimbus_vault_server_infrastructure::{
     },
     webapi::{WebApi, WebApiSettings},
 };
-use nimbus_vault_server_shared::environment::{BASE_ADDR_VAR_NAME, DATABASE_URL_VAR_NAME};
+use nimbus_vault_server_shared::environment::{
+    BASE_ADDR_VAR_NAME, CA_CERT_PATH_VAR_NAME, CA_KEY_PATH_VAR_NAME, DATABASE_URL_VAR_NAME,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let database_settings = DatabaseSettings::new(dotenvy::var(DATABASE_URL_VAR_NAME).unwrap());
     let webapi_settings = WebApiSettings::new(dotenvy::var(BASE_ADDR_VAR_NAME).unwrap());
+    let auth_settings = AuthSettings::new(
+        dotenvy::var(CA_CERT_PATH_VAR_NAME).unwrap(),
+        dotenvy::var(CA_KEY_PATH_VAR_NAME).unwrap(),
+    );
 
     let database = Arc::new(Database::new(database_settings).await?);
 
@@ -28,6 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let time_service = Arc::new(DefaultTimeService::new());
     let crypto_service = Arc::new(DefaultCryptoService::new());
+    let auth_service = Arc::new(DefaultAuthService::new(auth_settings)?);
 
     let use_cases = Arc::new(
         ApplicationUseCasesBuilder::new()
@@ -35,6 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .with_device_repository(device_repository.clone())
             .with_time_service(time_service.clone())
             .with_crypto_service(crypto_service.clone())
+            .with_auth_service(auth_service.clone())
             .build()?,
     );
 
