@@ -17,6 +17,9 @@ use sha2::Sha256;
 pub struct DefaultCryptoService {}
 
 impl DefaultCryptoService {
+    pub fn new() -> Self {
+        Self {}
+    }
     fn _hash_pbkdf2_sha256(
         &self,
         password: &str,

@@ -1,9 +1,12 @@
 use std::sync::Arc;
 
-use nimbus_vault_server_application::use_cases::builder::ApplicationUseCasesBuilder;
+use nimbus_vault_server_application::{
+    services::crypto::CryptoService, use_cases::builder::ApplicationUseCasesBuilder,
+};
 use nimbus_vault_server_infrastructure::{
     database::{Database, DatabaseSettings},
     services::{
+        crypto::DefaultCryptoService,
         repositories::{
             device_repository::DefaultDeviceRepository, user_repository::DefaultUserRepository,
         },
@@ -24,12 +27,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let device_repository = Arc::new(DefaultDeviceRepository::new(database.clone()));
 
     let time_service = Arc::new(DefaultTimeService::new());
+    let crypto_service = Arc::new(DefaultCryptoService::new());
 
     let use_cases = Arc::new(
         ApplicationUseCasesBuilder::new()
             .with_user_repository(user_repository.clone())
             .with_device_repository(device_repository.clone())
             .with_time_service(time_service.clone())
+            .with_crypto_service(crypto_service.clone())
             .build()?,
     );
 

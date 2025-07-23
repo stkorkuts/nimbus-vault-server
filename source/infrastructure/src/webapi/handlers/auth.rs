@@ -11,18 +11,18 @@ use nimbus_vault_server_application::use_cases::{
 };
 use prost::Message;
 
-use crate::proto::{RegisterUserRequest, RegisterUserResponse, User};
+use crate::proto::{RegisterUserRequestProto, RegisterUserResponseProto, UserProto};
 
 pub async fn register_user(
     State(use_cases): State<Arc<ApplicationUseCases>>,
     body: Bytes,
 ) -> Response {
-    let RegisterUserRequest {
+    let RegisterUserRequestProto {
         username,
         password,
         e2e_key_hash,
         encrypted_master_key,
-    } = match RegisterUserRequest::decode(body.as_ref()) {
+    } = match RegisterUserRequestProto::decode(body.as_ref()) {
         Ok(req) => req,
         Err(err) => {
             eprintln!("{err}");
@@ -53,8 +53,8 @@ pub async fn register_user(
         }
     };
 
-    let response = RegisterUserResponse {
-        user: Some(User {
+    let response = RegisterUserResponseProto {
+        user: Some(UserProto {
             id: result.user.id,
             username: result.user.username,
             encrypted_master_key: result.user.encrypted_master_key,
