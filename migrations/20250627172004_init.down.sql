@@ -4,6 +4,8 @@ DROP INDEX IF EXISTS idx_devices_user_id;
 
 DROP INDEX IF EXISTS idx_devices_user_id_revoked;
 
+DROP INDEX IF EXISTS idx_users_username;
+
 ALTER TABLE devices DROP CONSTRAINT fk_devices_user_id;
 
 DROP TABLE IF EXISTS devices;

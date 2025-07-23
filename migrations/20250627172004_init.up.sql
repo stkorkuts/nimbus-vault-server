@@ -24,6 +24,8 @@ CREATE TABLE devices (
 ALTER TABLE devices
 ADD CONSTRAINT fk_devices_user_id FOREIGN KEY (user_id) REFERENCES users (id);
 
+CREATE INDEX idx_users_username ON users (username);
+
 CREATE INDEX idx_devices_cert_fingerprint ON devices (cert_fingerprint);
 
 CREATE INDEX idx_devices_user_id ON devices (user_id);

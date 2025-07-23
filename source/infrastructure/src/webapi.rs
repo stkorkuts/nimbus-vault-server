@@ -1,12 +1,13 @@
-use std::{error::Error, sync::Arc};
+pub mod errors;
+mod handlers;
+
+use std::sync::Arc;
 
 use axum::{Router, routing::post, serve};
 use nimbus_vault_server_application::use_cases::ApplicationUseCases;
 use tokio::net::TcpListener;
 
-use crate::webapi::handlers::auth::register_user;
-
-mod handlers;
+use crate::webapi::{errors::WebApiError, handlers::auth::register_user};
 
 #[derive(Debug)]
 pub struct WebApiSettings {
@@ -36,7 +37,7 @@ impl WebApi {
             .with_state(use_cases)
     }
 
-    pub async fn serve(&self) -> Result<(), ApplicationError> {
+    pub async fn serve(&self) -> Result<(), WebApiError> {
         let listener = TcpListener::bind(self.settings.base_addr.as_str()).await?;
         serve(listener, self.router.clone()).await?;
         Ok(())

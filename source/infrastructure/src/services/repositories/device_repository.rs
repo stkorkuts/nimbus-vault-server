@@ -1,7 +1,9 @@
 use std::{error::Error, sync::Arc};
 
 use async_trait::async_trait;
-use nimbus_vault_server_application::services::repositories::device_repository::DeviceRepository;
+use nimbus_vault_server_application::services::repositories::device_repository::{
+    DeviceRepository, errors::DeviceRepositoryError,
+};
 use nimbus_vault_server_domain::entities::device::{
     Device, specifications::RestoreDeviceSpecification,
 };
@@ -18,7 +20,7 @@ impl DefaultDeviceRepository {
         Self { database }
     }
 
-    fn to_db_entity(&self, device: Device) -> DeviceDb {
+    fn to_db_entity(&self, device: &Device) -> DeviceDb {
         DeviceDb {
             id: device.id().to_string(),
             user_id: device.user_id().to_string(),
@@ -31,17 +33,27 @@ impl DefaultDeviceRepository {
         }
     }
 
-    fn to_domain_entity(&self, device_db: DeviceDb) -> Result<Device, ApplicationError> {
-        Device::restore(RestoreDeviceSpecification {
-            id: Ulid::from_string(device_db.id.as_str())?,
-            user_id: Ulid::from_string(device_db.user_id.as_str())?,
+    fn to_domain_entity(&self, device_db: DeviceDb) -> Result<Device, DeviceRepositoryError> {
+        let id = Ulid::from_string(device_db.id.as_str()).map_err(|decode_err| {
+            DeviceRepositoryError::Decode {
+                error_message: decode_err.to_string(),
+            }
+        })?;
+        let user_id = Ulid::from_string(device_db.user_id.as_str()).map_err(|decode_err| {
+            DeviceRepositoryError::Decode {
+                error_message: decode_err.to_string(),
+            }
+        })?;
+        Ok(Device::restore(RestoreDeviceSpecification {
+            id,
+            user_id,
             name: device_db.name,
             device_type: device_db.device_type.to_domain(),
             cert_fingerprint: device_db.cert_fingerprint,
             registered_at: device_db.registered_at,
             last_seen_at: device_db.last_seen_at,
             revoked_at: device_db.revoked_at,
-        })
+        })?)
     }
 }
 
@@ -50,7 +62,7 @@ impl DeviceRepository for DefaultDeviceRepository {
     async fn get_by_fingerprint(
         &self,
         cert_fingerprint: &str,
-    ) -> Result<Option<Device>, ApplicationError> {
+    ) -> Result<Option<Device>, DeviceRepositoryError> {
         sqlx::query_as!(
             DeviceDb,
             r#"
@@ -61,11 +73,12 @@ impl DeviceRepository for DefaultDeviceRepository {
             cert_fingerprint
         )
         .fetch_optional(self.database.pool())
-        .await?
+        .await
+        .map_err(|db_err| DeviceRepositoryError::DataSource { error_message: db_err.to_string() })?
         .map(|device_db| self.to_domain_entity(device_db))
         .transpose()
     }
-    async fn save(&self, device: Device) -> Result<(), ApplicationError> {
+    async fn save(&self, device: &Device) -> Result<(), DeviceRepositoryError> {
         let device_db = self.to_db_entity(device);
         sqlx::query!(
             r#"
@@ -87,7 +100,8 @@ impl DeviceRepository for DefaultDeviceRepository {
             device_db.revoked_at
         )
         .execute(self.database.pool())
-        .await?;
+        .await
+        .map_err(|db_err| DeviceRepositoryError::DataSource { error_message: db_err.to_string() })?;
         Ok(())
     }
 }

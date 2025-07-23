@@ -1,6 +1,10 @@
 use async_trait::async_trait;
-use nimbus_vault_server_application::services::repositories::user_repository::UserRepository;
-use nimbus_vault_server_domain::entities::user::{User, specifications::RestoreUserSpecification};
+use nimbus_vault_server_application::services::repositories::user_repository::{
+    UserRepository, errors::UserRepositoryError,
+};
+use nimbus_vault_server_domain::entities::user::{
+    User, errors::UserError, specifications::RestoreUserSpecification,
+};
 use ulid::Ulid;
 
 use std::{error::Error, sync::Arc};
@@ -28,22 +32,27 @@ impl DefaultUserRepository {
         }
     }
 
-    fn to_domain_entity(&self, user_db: UserDb) -> Result<User, ApplicationError> {
-        User::restore(RestoreUserSpecification {
-            id: Ulid::from_string(user_db.id.as_str())?,
+    fn to_domain_entity(&self, user_db: UserDb) -> Result<User, UserRepositoryError> {
+        let id = Ulid::from_string(user_db.id.as_str()).map_err(|decode_err| {
+            UserRepositoryError::Decode {
+                error_message: decode_err.to_string(),
+            }
+        })?;
+        Ok(User::restore(RestoreUserSpecification {
+            id,
             username: user_db.username,
             password_hash: user_db.password_hash,
             e2e_key_hash: user_db.e2e_key_hash,
             encrypted_master_key: user_db.encrypted_master_key,
             created_at: user_db.created_at,
             updated_at: user_db.updated_at,
-        })
+        })?)
     }
 }
 
 #[async_trait]
 impl UserRepository for DefaultUserRepository {
-    async fn get_by_id(&self, id: ulid::Ulid) -> Result<Option<User>, ApplicationError> {
+    async fn get_by_id(&self, id: ulid::Ulid) -> Result<Option<User>, UserRepositoryError> {
         let id_str = id.to_string();
         sqlx::query_as!(
             UserDb,
@@ -55,12 +64,30 @@ impl UserRepository for DefaultUserRepository {
             id_str
         )
         .fetch_optional(self.database.pool())
-        .await?
+        .await
+        .map_err(|db_err| UserRepositoryError::DataSource { error_message: db_err.to_string() })?
         .map(|user_db| self.to_domain_entity(user_db))
         .transpose()
     }
 
-    async fn save(&self, user: &User) -> Result<(), ApplicationError> {
+    async fn get_by_username(&self, username: &str) -> Result<Option<User>, UserRepositoryError> {
+        sqlx::query_as!(
+            UserDb,
+            r#"
+            select id, username, password_hash, e2e_key_hash, encrypted_master_key, created_at, updated_at
+            from users
+            where username = $1
+            "#,
+            username
+        )
+        .fetch_optional(self.database.pool())
+        .await
+        .map_err(|db_err| UserRepositoryError::DataSource { error_message: db_err.to_string() })?
+        .map(|user_db| self.to_domain_entity(user_db))
+        .transpose()
+    }
+
+    async fn save(&self, user: &User) -> Result<(), UserRepositoryError> {
         let user_db = self.to_db_entity(user);
         sqlx::query!(
             r#"
@@ -84,7 +111,8 @@ impl UserRepository for DefaultUserRepository {
             user_db.updated_at
         )
         .execute(self.database.pool())
-        .await?;
+        .await
+        .map_err(|db_err| UserRepositoryError::DataSource { error_message: db_err.to_string() })?;
         Ok(())
     }
 }

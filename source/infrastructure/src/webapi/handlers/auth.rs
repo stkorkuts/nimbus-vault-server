@@ -24,7 +24,8 @@ pub async fn register_user(
         encrypted_master_key,
     } = match RegisterUserRequest::decode(body.as_ref()) {
         Ok(req) => req,
-        Err(_) => {
+        Err(err) => {
+            eprintln!("{err}");
             return (
                 StatusCode::BAD_REQUEST,
                 "Invalid protobuf message".to_owned(),
@@ -42,7 +43,8 @@ pub async fn register_user(
 
     let result = match use_cases.register_user(request).await {
         Ok(res) => res,
-        Err(_) => {
+        Err(err) => {
+            eprintln!("{err}");
             return (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Error while processing user registration".to_owned(),

@@ -1,8 +1,11 @@
 pub mod db_entities;
 pub mod enums;
+pub mod errors;
 
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use std::time::Duration;
+
+use crate::database::errors::DatabaseError;
 
 #[derive(Debug)]
 pub struct DatabaseSettings {
@@ -29,7 +32,7 @@ impl DatabaseSettings {
 }
 
 impl Database {
-    pub async fn new(settings: DatabaseSettings) -> Result<Self, sqlx::Error> {
+    pub async fn new(settings: DatabaseSettings) -> Result<Self, DatabaseError> {
         let pool = PgPoolOptions::new()
             .max_connections(settings.max_connections)
             .acquire_timeout(Duration::from_secs(30))
