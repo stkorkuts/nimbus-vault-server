@@ -8,7 +8,7 @@ use axum::{Router, routing::post, serve};
 use nimbus_vault_server_application::use_cases::ApplicationUseCases;
 use tokio::net::TcpListener;
 
-use crate::webapi::{errors::WebApiError, handlers::auth::register_user};
+use crate::webapi::errors::WebApiError;
 
 #[derive(Debug)]
 pub struct WebApiSettings {
@@ -34,7 +34,9 @@ impl WebApi {
 
     fn create_router(use_cases: Arc<ApplicationUseCases>) -> Router {
         Router::new()
-            .route("/register", post(register_user))
+            .route("/signup", post(register_user))
+            .route("/signin", post(register_user))
+            .route("/refresh", post(register_user))
             .with_state(use_cases)
     }
 
