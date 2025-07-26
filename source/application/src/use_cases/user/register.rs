@@ -13,7 +13,7 @@ use crate::{
     use_cases::user::{UserSchema, register::errors::RegisterUserUseCaseError},
 };
 
-pub struct RegisterUserRequestSchema {
+pub struct SignUpRequestSchema {
     pub username: String,
     pub password: String,
     pub e2e_key_hash: String,
@@ -45,12 +45,12 @@ impl RegisterUserUseCase {
 
     pub async fn execute(
         &self,
-        RegisterUserRequestSchema {
+        SignUpRequestSchema {
             username,
             password,
             e2e_key_hash,
             encrypted_master_key,
-        }: RegisterUserRequestSchema,
+        }: SignUpRequestSchema,
     ) -> Result<RegisterUserResponseSchema, RegisterUserUseCaseError> {
         if let Some(_) = self.user_repository.get_by_username(&username).await? {
             return Err(RegisterUserUseCaseError::UserAlreadyExists);

@@ -9,7 +9,7 @@ use crate::use_cases::{
         errors::RegisterDeviceUseCaseError,
     },
     user::register::{
-        RegisterUserRequestSchema, RegisterUserResponseSchema, RegisterUserUseCase,
+        RegisterUserResponseSchema, RegisterUserUseCase, SignUpRequestSchema,
         errors::RegisterUserUseCaseError,
     },
 };
@@ -22,7 +22,7 @@ pub struct ApplicationUseCases {
 impl ApplicationUseCases {
     pub async fn register_user(
         &self,
-        request: RegisterUserRequestSchema,
+        request: SignUpRequestSchema,
     ) -> Result<RegisterUserResponseSchema, RegisterUserUseCaseError> {
         self.register_user.execute(request).await
     }
