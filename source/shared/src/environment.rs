@@ -1,3 +1,0 @@
-pub const DATABASE_URL_VAR_NAME: &str = "DATABASE_URL";
-pub const BASE_ADDR_VAR_NAME: &str = "BASE_ADDR";
-pub const AUTH_TOKEN_SIGN_KEY_VAR_NAME: &str = "AUTH_TOKEN_SIGN_KEY";

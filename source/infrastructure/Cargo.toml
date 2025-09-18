@@ -1,46 +1,9 @@
 [package]
-name = "nimbus_vault_server_infrastructure"
+name = "nimbus_vault_infrastructure"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-nimbus_vault_server_domain = { path = "../domain" }
-nimbus_vault_server_application = { path = "../application" }
-nimbus_vault_server_shared = { path = "../shared" }
-
-# Common
-ulid = { version = "1.2.1" }
-chrono = { version = "0.4.41", features = ["serde"] }
-async-trait = { version = "0.1.88" }
-thiserror = { version = "2.0.12" }
-
-# Async
-tokio = { version = "1.45.1", features = ["full"] }
-
-# Database
-sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio-native-tls", "macros", "chrono", "json"] }
-
-# Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-
-# HTTP framework
-axum = "0.8"
-tower = "0.5"
-tower-http = { version = "0.6", features = ["cors", "trace"] }
-hyper = { version = "1.0", features = ["full"] }
-
-# Crypto
-sha2 = "0.10"
-hex = "0.4"
-pbkdf2 = "0.12"
-rand = "0.9"
-hmac = "0.12"
-openssl = { version = "0.10" }
-base64 = "0.22"
-
-# Protobuf
-prost = "0.12"
-
-[build-dependencies]
-prost-build = "0.12"
+nimbus_vault_domain = { path = "../domain" }
+nimbus_vault_application = { path = "../application" }
+nimbus_vault_shared = { path = "../shared" }
